@@ -1,0 +1,75 @@
+﻿@model Task6.ViewModels.NewGameViewModel
+
+@Html.ValidationSummary()
+<div class="container col-sm-12">
+    <div class="text-center">
+        <h4>Выберите игру из списка доступных</h4>
+        <div class="row  justify-content-center">
+            <div class="form-group col-md-3">
+                <input name="tagsFilter" class="form-control" id="filter" placeholder="Фильтрация по тегу" onkeyup="tableSearch()">
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <section id="menu">
+                @foreach (var item in ViewBag.Games)
+                {
+                    <gameCell class="gameCell">
+                        <h2>@item.Name</h2>
+                        <p class="tag">@item.Tags</p>
+                        <a id="join" name="@item.Name" class="btn btn-danger" asp-route-name="@item.Name" asp-area="" asp-controller="Home" asp-action="JoinTheGame">Присоединиться</a>
+                    </gameCell>
+                }
+            </section>
+        </div>
+
+        <h5>Создайте игру</h5>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <form method="post" asp-controller="Home" asp-action="CreateNewGame">
+                    <div class="form-group">
+                        <label asp-for="Name">Введите название игры</label>
+                        <input id="newgame" type="text" asp-for="Name" class="form-control" placeholder="Введите название игры">
+                        <span asp-validation-for="Name" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Tags">Введите тег игры</label>
+                        <input name="newtags" id="newtag" class="form-control" placeholder="#tag">
+                        <input id="hiddenTags" name="tags" class="form-control" maxlength="30" type="hidden" asp-for="Tags" />
+                        <span asp-validation-for="Tags" />
+                    </div>
+                    <button id="create" value="Create" type="submit" class="btn btn-info">Создать игру</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Index.js"></script>
+<script src="~/js/tagify.min.js"></script>
+<script type="text/javascript">
+    var input = document.querySelector('input[name="tagsFilter"]'), input2 = document.querySelector('input[name="newtags"]');
+
+    tagify2 = new Tagify(input2,
+        {
+            maxTags: 10,
+            dropdown: {
+                maxItems: 20,
+                classname: "tags-look",
+                enabled: 0,
+                closeOnSelect: false
+            }
+        });
+    $('form').submit(function () {
+        var str="", array = JSON.parse($('#newtag').val());
+        array.forEach(item=>
+        {
+            str += item.value+",";
+        })
+        str = str.substring(0,(str.length - 1));
+        $('#hiddenTags').val(str);
+        return true;
+    });
+</script>

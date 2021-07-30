@@ -1,0 +1,44 @@
+﻿<section class="text-center">
+    <p name="@ViewBag.TypeOfMove" id="move" class="nav-link text-dark text-center">Ты играешь за "@ViewBag.TypeOfMove"</p>
+    <div class="wrapper">
+        <div class="cell c1" id="1"></div>
+        <div class="cell c2" id="2"></div>
+        <div class="cell c3" id="3"></div>
+        <div class="cell c4" id="4"></div>
+        <div class="cell c5" id="5"></div>
+        <div class="cell c6" id="6"></div>
+        <div class="cell c7" id="7"></div>
+        <div class="cell c8" id="8"></div>
+        <div class="cell c9" id="9"></div>
+    </div>
+    <div id="my_modal" class="modal">
+        <div class="modal_content">
+            <a asp-route-name="@ViewBag.Name" asp-controller="Home" asp-action="RemovePlayerFromGame" class="close_modal_window">Выйти</a>
+            <p id="winner"></p>
+        </div>
+    </div>
+    <div name="@ViewBag.Join" id="wait_modal" class="wait_modal">
+        <div class="wait_modal_content">
+            <a asp-route-name="@ViewBag.Name" asp-controller="Home" asp-action="RemovePlayerFromGame" class="close_wait_modal_window">Выйти</a>
+            <p id="winner">Ожидаем другого игрока...</p>
+        </div>
+    </div>
+    <a name="@ViewBag.Name" id="exit" class="btn btn-primary mt-3" asp-route-name="@ViewBag.Name" asp-area="" asp-controller="Home" asp-action="RemovePlayerFromGame">Покинуть игру</a>
+</section>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/Field.js"></script>
+<script type="text/javascript">
+    var timer = setInterval(() => {
+        if (hubConnection.state == "Connected") {
+            wait_modal.style.display = "block";
+            hubConnection.invoke('AddToGame', document.getElementById("exit").getAttribute("name"));
+            if (document.getElementById("wait_modal").getAttribute("name") == "join") {
+                hubConnection.invoke('CheckOpp', document.getElementById("exit").getAttribute("name"));
+            }
+            clearInterval(timer);
+        }
+    }, 100)
+</script>
